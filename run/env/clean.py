@@ -34,6 +34,7 @@ def main() -> None:
         # 通过 uv 自身命令清理，遵守缓存锁，避免误删正在使用的条目。
         subprocess.run([str(uv), "cache", "clean", "--cache-dir", str(cache), "--offline"], cwd=ROOT, check=True)
         remove_directory(ROOT / ".cache/bootstrap")
+    remove_directory(ROOT / ".cache/matplotlib")
 
     # 清理旧打包方式遗留的项目元数据和源码字节码。
     remove_directory(ROOT / "alchemy_research.egg-info")

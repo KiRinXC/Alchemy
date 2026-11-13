@@ -5,7 +5,10 @@ description = "Model recovery with public initialization and partially visible T
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
+    "grad-cam==1.5.5",
     "numpy==1.24.1",
+    # 固定与当前 NumPy 兼容的图像依赖，供 Grad-CAM 导入。
+    "opencv-python==4.10.0.84",
     "pillow>=10,<11",
     "pretrainedmodels==0.7.4",
     # 旧版 PyTorch 依赖 pkg_resources，较新的 setuptools 已移除该接口。

@@ -72,16 +72,18 @@ def load_training_config(path: Path) -> dict:
 
 
 def build_transforms(name: str) -> tuple:
-    """CIFAR 沿用 TensorShield 增强，其余数据集使用论文规定的输入尺寸。"""
-    if name in {"c10", "c100"}:
+    """按 TensorShield 公开 MS 代码的数据集映射构造变换。"""
+    # 作者将 Tiny-ImageNet 映射到 CIFAR：训练裁剪为 32，评估保留原始尺寸。
+    if name in {"c10", "c100", "t200"}:
         mean, std = (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)
         train = [transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip()]
         evaluation = []
-    else:
+    elif name == "s10":
         mean, std = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
-        size, resize = (128, 128) if name == "s10" else (224, 256)
-        train = [transforms.Resize(resize), transforms.RandomCrop(size, padding=4 if name == "s10" else 0), transforms.RandomHorizontalFlip()]
-        evaluation = [transforms.Resize(resize), transforms.CenterCrop(size)]
+        train = [transforms.RandomResizedCrop(96), transforms.RandomHorizontalFlip()]
+        evaluation = [transforms.Resize(128), transforms.CenterCrop(96)]
+    else:
+        raise ValueError(f"未知数据集：{name}")
     tail = [transforms.ToTensor(), transforms.Normalize(mean, std)]
     return transforms.Compose(train + tail), transforms.Compose(evaluation + tail)
 
@@ -106,9 +108,12 @@ class TinyValidation(Dataset):
             return self.transform(image.convert("RGB")), label
 
 
-def build_datasets(name: str) -> tuple:
+def build_datasets(name: str, model_name: str) -> tuple:
     """保持官方训练文件的样本顺序，分别为完整训练集和测试集设置变换。"""
     train_transform, evaluation_transform = build_transforms(name)
+    # 沿用作者训练入口：VGG 在测试选模时也使用训练增强。
+    if "vgg" in model_name or "alex" in model_name:
+        evaluation_transform = train_transform
     root = ROOT / "dataset/raw" / name
     if name in {"c10", "c100"}:
         factory = datasets.CIFAR10 if name == "c10" else datasets.CIFAR100
@@ -333,7 +338,7 @@ def main() -> None:
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("没有可用 CUDA 设备。")
-    train_data, test_data = build_datasets(args.dataset)
+    train_data, test_data = build_datasets(args.dataset, args.model)
     train_loader = make_loader(train_data, training["batch_size"], True, args.num_workers, config, device)
     test_loader = make_loader(test_data, training["batch_size"], False, args.num_workers, config, device)
     model = build_model(args.model, args.dataset, config).to(device)

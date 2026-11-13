@@ -1,0 +1,23 @@
+# 默认种子读取项目根目录，首轮运行 seed 42。
+model = "resnet18"
+dataset = "c100"
+device = "cuda"
+num_workers = 4
+cpu_threads = 2
+
+[victim]
+epoch = 69
+test_accuracy = 61.72
+
+[data]
+intrinsic_fraction = 0.9
+
+[intrinsic]
+epochs = 10
+batch_size = 128
+lr = 0.01
+momentum = 0.9
+weight_decay = 0.0
+
+[attention]
+batch_size = 128

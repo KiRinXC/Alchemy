@@ -3,7 +3,7 @@
 Alchemy 研究在公共预训练模型和部分已知权重可用时，如何恢复目标模型的任务能力。
 玩家 A 使用 TensorShield，玩家 B 使用相同模型结构，通过查询 A 得到的完整软标签训练替代模型。
 
-当前已完成运行环境、四个原始数据集、数据划分、预训练模型准备，以及 ResNet18 + c100 的首轮玩家 A 微调。
+当前已完成运行环境、四个原始数据集、数据划分、预训练模型准备，以及 ResNet18 + c100 的首轮玩家 A 微调与张量排序。后续实验采用 `exp/02_rank` 的 Rank。
 
 ## 目录
 
@@ -20,6 +20,7 @@ Alchemy 研究在公共预训练模型和部分已知权重可用时，如何恢
 | [exp/](exp/) | 正式实验代码、配置和协议 |
 | [results/](results/) | 实验指标摘要和逐轮训练数据 |
 | [tests/](tests/README.md) | 验证结束后清空的临时工作区 |
+| [tmp/01_rawrank/](tmp/01_rawrank/README.md) | 作者原始内部重要性算法的临时对照实验与结果 |
 | [docs/](docs/) | 论文和参考资料 |
 | [AGENTS.md](AGENTS.md) | 项目协作规则 |
 
@@ -34,6 +35,7 @@ Alchemy 研究在公共预训练模型和部分已知权重可用时，如何恢
 | [run/dataset/split.py](run/dataset/split.py) | 保存官方训练池编号及其随机抽样索引 |
 | [run/01_train_base.py](run/01_train_base.py) | 复现玩家 A 的基础微调流程 |
 | [exp/01_train_base/](exp/01_train_base/README.md) | 全部训练数据微调、官方测试集选模 |
+| [exp/02_rank/](exp/02_rank/README.md) | TensorShield 内部重要性、注意力迁移和完整排序 |
 | [run/models/download.py](run/models/download.py) | 下载并校验 ImageNet 预训练权重 |
 | [models/build.py](models/build.py) | 构造模型、加载预训练主体、按全局种子初始化分类头 |
 | [models/weights.py](models/weights.py) | 预训练权重的固定版本、存放位置与完整性校验 |

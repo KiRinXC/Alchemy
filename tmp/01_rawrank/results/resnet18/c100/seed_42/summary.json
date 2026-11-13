@@ -1,0 +1,108 @@
+{
+  "configuration": {
+    "model": "resnet18",
+    "dataset": "c100",
+    "device": "cuda",
+    "num_workers": 4,
+    "cpu_threads": 2,
+    "top_k": 10,
+    "victim": {
+      "epoch": 69,
+      "test_accuracy": 61.72
+    },
+    "data": {
+      "intrinsic_fraction": 0.9
+    },
+    "intrinsic": {
+      "epochs": 10,
+      "batch_size": 128,
+      "lr": 0.01,
+      "momentum": 0.9,
+      "weight_decay": 0.0
+    },
+    "attention": {
+      "batch_size": 128
+    },
+    "seed": 42,
+    "deterministic": true
+  },
+  "environment": {
+    "torch": "2.1.1+cu121",
+    "torchvision": "0.16.1+cu121",
+    "grad_cam": "1.5.5"
+  },
+  "inputs_sha256": {
+    "tmp/01_rawrank/weights/public_init/resnet18/c100/seed_42/init.pth": "49145741059dbc821c8ba99dafa550982a0cb4c8c9ef803e80d10a901a353a55",
+    "weights/01_train_base/resnet18/c100/seed_42/best.pth": "99f9d28e38d5769c016bdea5a1776b21e3d038fb270db41686712593c7388d14",
+    "dataset/splits/c100/seed_42/order.txt": "d6f15157588de6241cdf724b54671d079a8f6223a2af6c5639ebf386c6e09ac3"
+  },
+  "intrinsic_source": {
+    "url": "https://github.com/suntong30/TensorShield/blob/main/model-stealing/knockoff/adversary/get_importance.py",
+    "git_blob": "15f764470e304c5bf17385161a7aaaf7d4d10a77"
+  },
+  "counts": {
+    "weights": 41,
+    "eligible": 17,
+    "intrinsic_images": 45000,
+    "attention_images": 5000,
+    "intrinsic_steps": 3520,
+    "attention_class_min": 29,
+    "attention_class_max": 69
+  },
+  "top10": [
+    "last_linear.weight",
+    "layer2.0.conv1.weight",
+    "layer1.0.conv2.weight",
+    "layer1.1.conv1.weight",
+    "layer1.0.conv1.weight",
+    "layer1.1.conv2.weight",
+    "layer2.0.conv2.weight",
+    "layer3.0.conv1.weight",
+    "layer2.1.conv1.weight",
+    "layer3.0.conv2.weight"
+  ],
+  "protected_tensors": [
+    "last_linear.weight",
+    "layer2.0.conv1.weight",
+    "layer1.0.conv2.weight",
+    "layer1.1.conv1.weight",
+    "layer1.0.conv1.weight",
+    "layer1.1.conv2.weight",
+    "layer2.0.conv2.weight",
+    "layer3.0.conv1.weight",
+    "layer2.1.conv1.weight",
+    "layer3.0.conv2.weight",
+    "last_linear.bias"
+  ],
+  "author_comparison": {
+    "intersection_count": 9,
+    "intersection": [
+      "last_linear.weight",
+      "layer2.0.conv1.weight",
+      "layer1.0.conv2.weight",
+      "layer1.1.conv1.weight",
+      "layer1.0.conv1.weight",
+      "layer1.1.conv2.weight",
+      "layer2.0.conv2.weight",
+      "layer3.0.conv1.weight",
+      "layer2.1.conv1.weight"
+    ],
+    "computed_only": [
+      "layer3.0.conv2.weight"
+    ],
+    "author_only": [
+      "layer2.1.conv2.weight"
+    ],
+    "top10_equal": false,
+    "rank_equal": false,
+    "eligible_rank_equal": false
+  },
+  "checks": {
+    "models_unchanged": true,
+    "input_files_unchanged": true
+  },
+  "seconds": {
+    "intrinsic": 53.926,
+    "attention": 7.509
+  }
+}
