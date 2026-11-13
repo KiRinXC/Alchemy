@@ -1,0 +1,34 @@
+[project]
+name = "alchemy-research"
+version = "0.1.0"
+description = "Model recovery with public initialization and partially visible TensorShield weights"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "numpy==1.24.1",
+    "pillow>=10,<11",
+    "pretrainedmodels==0.7.4",
+    # 旧版 PyTorch 依赖 pkg_resources，较新的 setuptools 已移除该接口。
+    "setuptools==80.9.0",
+    "six>=1.12,<2",
+    "tomli>=2,<3",
+    "torch==2.1.1+cu121",
+    "torchvision==0.16.1+cu121",
+    "tqdm>=4.66,<5",
+]
+
+[tool.uv]
+# 只安装项目依赖，准备脚本和实验代码直接从工作目录运行。
+package = false
+required-version = "==0.13.7"
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+build-constraint-dependencies = ["setuptools==80.9.0"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
+torchvision = { index = "pytorch-cu121" }
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true

@@ -1,0 +1,17 @@
+{
+  "best": {
+    "epoch": 69,
+    "train_accuracy": 87.308,
+    "test_accuracy": 61.72,
+    "train_loss": 0.429284,
+    "test_loss": 1.556664
+  },
+  "last": {
+    "epoch": 100,
+    "train_accuracy": 95.558,
+    "test_accuracy": 59.67,
+    "train_loss": 0.154171,
+    "test_loss": 1.903405
+  },
+  "train_eval_minutes": 22.583
+}

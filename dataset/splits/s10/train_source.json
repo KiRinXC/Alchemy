@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "dataset": "s10",
+  "pool": "official_labeled_train",
+  "a_train_count": 5000,
+  "classes_in_label_order": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+  ],
+  "evaluation_split": "test",
+  "archive_sha256": "f31fd99273a1acb8609c8db427cebb1de3f71de77758cdc0e22956e1289b9866",
+  "training_inputs_sha256": "558af0227893f33879b146bd3bd2f3abba11c96e94579e18ea2e3c4e8ffe0f41",
+  "train_index_sha256": "547cb3b21e262f13d546c58624b317f14093e064ea512d8eb82e997b88239273",
+  "sample_paths_relative_to": "dataset/raw/s10"
+}

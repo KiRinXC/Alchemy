@@ -1,0 +1,7 @@
+# 默认实验组合；种子统一读取根目录 config.toml。
+model = "resnet18"
+dataset = "c100"
+training_config = "configs/finetune.toml"
+device = "cuda"
+num_workers = 4
+cpu_threads = 2

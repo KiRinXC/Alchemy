@@ -1,0 +1,12 @@
+{
+  "dataset": "STL-10",
+  "download_url": "https://cs.stanford.edu/~acoates/stl10/stl10_binary.tar.gz",
+  "archive": "dataset/.archives/stl10_binary.tar.gz",
+  "archive_bytes": 2640397119,
+  "archive_md5": "91f7769df0f17e558f3565bffb0c7dfb",
+  "archive_sha256": "f31fd99273a1acb8609c8db427cebb1de3f71de77758cdc0e22956e1289b9866",
+  "checksum_source": "https://github.com/pytorch/vision/blob/v0.16.1/torchvision/datasets/stl10.py",
+  "verified_at_utc": "2026-11-12T08:22:29.016720+00:00",
+  "file_count": 7,
+  "extracted_bytes": 3124284849
+}

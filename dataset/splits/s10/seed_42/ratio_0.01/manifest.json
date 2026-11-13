@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "dataset": "s10",
+  "seed": 42,
+  "b_ratio": "0.01",
+  "a_train_count": 5000,
+  "b_train_count": 50,
+  "b_is_subset_of_a": true,
+  "a_keeps_all_training_samples": true,
+  "b_labels": "query_A_full_probabilities_not_generated_yet",
+  "evaluation_split": "test",
+  "sampling": "numpy.PCG64.permutation; prefix floor(N * ratio); without replacement; not stratified",
+  "numpy_version": "1.24.1",
+  "effective_config": {
+    "random": {
+      "seed": 42,
+      "seeds": [
+        42,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "deterministic": true
+    },
+    "data": {
+      "b_ratio": "0.01"
+    }
+  },
+  "b_class_counts_for_audit_only": {
+    "0": 7,
+    "1": 1,
+    "2": 8,
+    "3": 6,
+    "4": 3,
+    "5": 4,
+    "6": 6,
+    "7": 9,
+    "8": 1,
+    "9": 5
+  },
+  "hashes": {
+    "train_source_sha256": "23de45900d11584f8628965ddc31214ac7f879c8b2e663058a5217378bedffc7",
+    "train_index_sha256": "547cb3b21e262f13d546c58624b317f14093e064ea512d8eb82e997b88239273",
+    "order_sha256": "022fc43267da7c957622d3118844ee603978409cc070e743ecf112564874846e",
+    "b_indices_sha256": "149573b1363eb5b9517acc19138f4456af42e8dc4ff275534a832da0396cf408",
+    "implementation_sha256": "ea28d0c38cbe38143017f2111b0d04f4b6b211068cac8713e7c34af988feaff8",
+    "uv_lock_sha256": "856b270fce93ec178c36b6c5987012b8b0c2837c87a6dbeab3c4c174af58b404"
+  }
+}

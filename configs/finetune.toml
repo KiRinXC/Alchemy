@@ -1,0 +1,11 @@
+# TensorShield 论文 §8.1 的微调超参数，供各实验共同读取。
+epochs = 100
+batch_size = 64
+loss = "cross_entropy"
+optimizer = "sgd"
+lr = 0.1
+momentum = 0.5
+weight_decay = 0.0005
+scheduler = "step"
+step_size = 60
+gamma = 0.1

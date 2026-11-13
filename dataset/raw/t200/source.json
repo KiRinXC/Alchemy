@@ -1,0 +1,12 @@
+{
+  "dataset": "Tiny-ImageNet-200",
+  "download_url": "https://cs231n.stanford.edu/tiny-imagenet-200.zip",
+  "archive": "dataset/.archives/tiny-imagenet-200.zip",
+  "archive_bytes": 248100043,
+  "archive_md5": "90528d7ca1a48142e341f4ef8d21d0de",
+  "archive_sha256": "6198c8ae015e2b3e007c7841da39ec069199b9aa3bfa943a462022fe5e43c821",
+  "checksum_source": "https://zenodo.org/records/10720917",
+  "verified_at_utc": "2026-11-12T08:19:14.662472+00:00",
+  "file_count": 120203,
+  "extracted_bytes": 239648330
+}

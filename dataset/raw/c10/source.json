@@ -1,0 +1,12 @@
+{
+  "dataset": "CIFAR-10",
+  "download_url": "https://zenodo.org/records/10089977/files/cifar-10-python.tar.gz?download=1",
+  "archive": "dataset/.archives/cifar-10-python.tar.gz",
+  "archive_bytes": 170498071,
+  "archive_md5": "c58f30108f718f92721af3b95e74349a",
+  "archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "checksum_source": "https://www.cs.toronto.edu/~kriz/cifar.html",
+  "verified_at_utc": "2026-11-12T08:25:30.454768+00:00",
+  "file_count": 8,
+  "extracted_bytes": 186214114
+}
