@@ -41,7 +41,7 @@ AUTHOR_RANK = (
     "layer4.0.conv2.weight", "layer4.1.conv1.weight", "layer4.1.conv2.weight",
     "layer3.1.conv2.weight", "layer3.1.conv1.weight",
 )
-OUTPUTS = ("intrinsic.tsv", "attention.tsv", "rank.tsv")
+OUTPUTS = ("intrinsic.tsv", "attention.tsv", "rank_all.tsv", "rank.tsv", "rank_excluded.tsv")
 
 
 def read_settings(path: Path) -> dict:
@@ -92,9 +92,29 @@ def load_models(settings: dict, config: Config) -> tuple[nn.Module, nn.Module]:
     return public.to(device).eval(), victim.to(device).eval()
 
 
+def weight_names(model: nn.Module) -> list[str]:
+    """按模型参数顺序列出全部 weight，不包含 bias 和 BN 缓冲区。"""
+    names = [name for name, _ in model.named_parameters() if name.endswith(".weight")]
+    if len(names) != 41:
+        raise ValueError("ResNet18 必须包含 41 个 weight 张量。")
+    return names
+
+
+def exclusion_reason(model: nn.Module, name: str) -> str:
+    """记录全部适用的候选排除原因；Downsample 中的 BN 同时标记两项。"""
+    module = model.get_submodule(name.removesuffix(".weight"))
+    reasons = []
+    if isinstance(module, nn.modules.batchnorm._BatchNorm):
+        reasons.append("BN")
+    if "downsample" in name:
+        reasons.append("Downsample")
+    if name == "conv1.weight":
+        reasons.append("Stem")
+    return ";".join(reasons)
+
+
 def candidate_names(model: nn.Module) -> list[str]:
-    names = [f"{name}.weight" for name, module in model.named_modules()
-             if isinstance(module, (nn.Conv2d, nn.Linear)) and name != "conv1" and "downsample" not in name]
+    names = [name for name in weight_names(model) if not exclusion_reason(model, name)]
     if set(names) != set(AUTHOR_RANK):
         raise ValueError("候选集合与协议规定的十七项不符。")
     return names
@@ -138,16 +158,41 @@ def check_unchanged(model: nn.Module, original: dict, name: str) -> None:
             raise RuntimeError(f"{name} 的参数或缓冲区发生变化：{key}")
 
 
-def combine_scores(intrinsic: dict, attention: dict) -> list[dict]:
-    """按综合评分降序排列全部候选，并附上作者排名。"""
-    rows = [{"tensor": name, "G_k": intrinsic[name], "A_k": attention[name]["A_k"],
-             "I_k": intrinsic[name] * attention[name]["A_k"]} for name in intrinsic]
+def combine_scores(model: nn.Module, intrinsic: dict, attention: dict) -> list[dict]:
+    """按综合评分排列全部 weight，附上参数量和候选分类。"""
+    names = weight_names(model)
+    if set(intrinsic) != set(names) or set(attention) != set(names):
+        raise ValueError("两项评分必须完整覆盖模型的 41 个 weight。")
+    parameters = dict(model.named_parameters())
+    rows = []
+    for name in names:
+        reason = exclusion_reason(model, name)
+        rows.append({"tensor": name, "parameters": parameters[name].numel(),
+                     "G_k": intrinsic[name], "A_k": attention[name]["A_k"],
+                     "I_k": intrinsic[name] * attention[name]["A_k"],
+                     "eligible": not reason, "exclusion_reason": reason})
     if not all(math.isfinite(row["I_k"]) and row["I_k"] >= 0 for row in rows):
         raise ValueError("综合评分必须是有限非负数。")
     rows.sort(key=lambda row: (-row["I_k"], row["tensor"]))
     for rank, row in enumerate(rows, 1):
-        row.update(rank=rank, author_rank=AUTHOR_RANK.index(row["tensor"]) + 1)
+        row["rank"] = rank
     return rows
+
+
+def partition_rank(rows: list[dict]) -> tuple[list[dict], list[dict]]:
+    """拆分候选与排除项，各自在表内从 1 编号，保持综合分数和相对顺序。"""
+    candidates, excluded = [], []
+    for row in rows:
+        item = {key: row[key] for key in ("tensor", "parameters", "G_k", "A_k", "I_k")}
+        if row["eligible"]:
+            item.update(rank=len(candidates) + 1, author_rank=AUTHOR_RANK.index(row["tensor"]) + 1)
+            candidates.append(item)
+        else:
+            item.update(rank=len(excluded) + 1, exclusion_reason=row["exclusion_reason"])
+            excluded.append(item)
+    if len(rows) != 41 or len(candidates) != 17 or len(excluded) != 24:
+        raise ValueError("Rank 分类必须满足 41 = 17 个候选 + 24 个排除项。")
+    return candidates, excluded
 
 
 def write_table(path: Path, rows: list[dict], fields: list[str]) -> None:
@@ -184,28 +229,35 @@ def main() -> None:
         raise FileExistsError("评分结果已存在；需要重新计算时显式使用 --overwrite。")
     intrinsic_loader, attention_loader = load_data(settings, config)
     public, victim = load_models(settings, config)
+    weights = weight_names(victim)
     candidates = candidate_names(victim)
-    print(f"A：epoch {settings['victim']['epoch']}，准确率 {settings['victim']['test_accuracy']}%；候选 {len(candidates)} 项。", flush=True)
+    print(f"A：epoch {settings['victim']['epoch']}，准确率 {settings['victim']['test_accuracy']}%；"
+          f"评分 {len(weights)} 项，候选 {len(candidates)} 项，排除 {len(weights) - len(candidates)} 项。", flush=True)
     if args.dry_run:
         return
     public_before, victim_before = snapshot(public), snapshot(victim)
     options = {key: value for key, value in settings["intrinsic"].items() if key != "batch_size"}
-    intrinsic, steps = compute_intrinsic(victim, intrinsic_loader, candidates, **options)
+    intrinsic, steps = compute_intrinsic(victim, intrinsic_loader, weights, **options)
     check_unchanged(public, public_before, "M_0")
     check_unchanged(victim, victim_before, "M_A")
-    attention = compute_attention(public, victim, attention_loader, candidates, 100)
+    attention = compute_attention(public, victim, attention_loader, weights, 100)
     check_unchanged(public, public_before, "M_0")
     check_unchanged(victim, victim_before, "M_A")
-    rows = combine_scores(intrinsic, attention)
+    rows = combine_scores(victim, intrinsic, attention)
+    candidate_rows, excluded_rows = partition_rank(rows)
     parameters = dict(victim.named_parameters())
     output.mkdir(parents=True, exist_ok=True)
     write_table(output / "intrinsic.tsv", [{"tensor": name, "parameters": parameters[name].numel(), "G_k": intrinsic[name]}
-                                          for name in candidates], ["tensor", "parameters", "G_k"])
-    write_table(output / "attention.tsv", [{"tensor": name, **attention[name]} for name in candidates],
+                                          for name in weights], ["tensor", "parameters", "G_k"])
+    write_table(output / "attention.tsv", [{"tensor": name, **attention[name]} for name in weights],
                 ["tensor", "A_k", "kind", "both_zero", "one_zero"])
-    write_table(output / "rank.tsv", rows, ["rank", "tensor", "G_k", "A_k", "I_k", "author_rank"])
+    write_table(output / "rank_all.tsv", rows,
+                ["rank", "tensor", "parameters", "G_k", "A_k", "I_k", "eligible", "exclusion_reason"])
+    write_table(output / "rank.tsv", candidate_rows, ["rank", "tensor", "G_k", "A_k", "I_k", "author_rank", "parameters"])
+    write_table(output / "rank_excluded.tsv", excluded_rows,
+                ["rank", "tensor", "parameters", "G_k", "A_k", "I_k", "exclusion_reason"])
     print(f"评分完成：内部重要性 {steps} 次更新；M_0、M_A 的全部参数和缓冲区保持一致。", flush=True)
-    print(f"已保存 {len(rows)} 个候选的评分和完整排名：{output.relative_to(ROOT)}", flush=True)
+    print(f"已保存完整 41 项、候选 17 项和排除 24 项排名：{output.relative_to(ROOT)}", flush=True)
 
 
 if __name__ == "__main__":

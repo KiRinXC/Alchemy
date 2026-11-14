@@ -2,7 +2,7 @@
 
 实验编号：`02_rank`。首轮配置：ResNet18 + CIFAR-100 + seed 42。
 
-计算内部重要性 $G_k$、注意力迁移 $A_k$ 和综合评分 $I_k = G_k A_k$，输出全部候选的排序，并附上 TensorShield 作者提供的排名。
+计算全部 41 个 weight 的内部重要性 $G_k$、注意力迁移 $A_k$ 和综合评分 $I_k = G_k A_k$，分别输出完整、候选与排除项排序。候选表附上 TensorShield 作者提供的候选排名。
 
 本实验按论文意图修正内部重要性计算，并补全未公开的注意力迁移细节，作为 Alchemy 后续实验的排序依据。具体计算约定如下。
 
@@ -37,7 +37,7 @@ CIFAR Normalize 的均值为 `(0.4914, 0.4822, 0.4465)`，标准差为 `(0.2023,
 | 模型模式 | `eval()`，BN statistics 不更新 |
 | 数据变换 | RandomCrop(32, padding=4) → RandomHorizontalFlip → ToTensor → CIFAR Normalize |
 
-全部参数正常参与前向、反向和 SGD 更新；只统计 17 个候选 weight 的分数。
+全部参数正常参与前向、反向和 SGD 更新；统计全部 41 个 weight 的分数，包括 20 个卷积、20 个 BN 和 1 个分类头 weight。bias 与 BN 缓冲区不独立评分。
 
 $$
 G_k=\frac{1}{T|W_k|}\sum_{t=1}^{T}\sum_{i\in W_k}
@@ -54,17 +54,19 @@ $T$ 表示实际优化器更新次数。本配置每轮 352 个批次，10 轮�
 
 固定 $M_0$、$M_A$，保持 `eval()`，不执行优化器更新。对后 5,000 张图片使用 `ToTensor → CIFAR Normalize`，两个模型接收相同输入、相同真实类别和对应模块位置。运行批次大小为 128。
 
-卷积张量采用 `pytorch-grad-cam==1.5.5` 的 GradCAM，通道权重为目标类别 logit 对该通道特征梯度的空间平均：
+卷积与 BN 张量采用 `pytorch-grad-cam==1.5.5` 的 GradCAM，通道权重为目标类别 logit 对该通道特征梯度的空间平均：
 
 $$
 \alpha_{k,c}=\frac{1}{H_kW_k}\sum_{h,w}\frac{\partial z_y}{\partial F_{k,c}(h,w)}.
 $$
 
-| 候选类型 | 用于余弦计算的响应 |
+| 张量对应模块 | 用于余弦计算的响应 |
 |---|---|
-| 空间尺寸至少 2×2 的 Conv | $\operatorname{ReLU}(\sum_c \alpha_c F_c)$，保留该层原始空间分辨率并展平 |
-| 空间尺寸为 1×1 的 Conv | 按通道组成向量 $[\operatorname{ReLU}(\alpha_c F_c(1,1))]_c$ |
+| 空间尺寸至少 2×2 的 Conv 或 BN | $\operatorname{ReLU}(\sum_c \alpha_c F_c)$，保留该层原始空间分辨率并展平 |
+| 空间尺寸为 1×1 的 Conv 或 BN | 按通道组成向量 $[\operatorname{ReLU}(\alpha_c F_c(1,1))]_c$ |
 | `last_linear.weight` | 分类头输入的 512 维正向通道贡献向量 $\mathbf v$ |
+
+BN 使用自身模块的原始输出，在原地 ReLU 或残差加法之前保存。各层特征与梯度按模块对应，不依赖残差分支的回调顺序；响应公式、类别等权和零向量规则保持不变。
 
 分类头输入为池化、展平后的特征 $\mathbf h$，真实类别 $y$ 的 logit 为 $z_y=\sum_i W_{y,i}h_i+b_y$。按通道计算：
 
@@ -83,7 +85,7 @@ $$
 
 两份响应均非零时正常计算；均为零时 $a_k=0$；仅一份为零时 $a_k=1$。零响应也计入所属类别的样本数量。
 
-全部 17 个候选均使用后 5,000 张图片，先在每个类别内求平均，再对 100 类等权平均：
+全部 41 个 weight 均使用后 5,000 张图片，先在每个类别内求平均，再对 100 类等权平均：
 
 $$
 A_k=\frac{1}{100}\sum_{c=1}^{100}\frac{1}{N_c}\sum_{x\in D_c}a_k(x,c).
@@ -93,13 +95,15 @@ $$
 
 ## 综合排序
 
-候选集合排除 BatchNorm、Downsample 和 Stem `conv1.weight`，保留 16 个主路径卷积 weight 和 `last_linear.weight`。
+全部 41 项均计算实际分数。候选集合排除 BatchNorm、Downsample 和 Stem `conv1.weight`，保留 16 个主路径卷积 weight 和 `last_linear.weight`。其余 24 项仅用于完整评分展示，不参与后续 `03_topk` 的保护选择。
 
 $$
 I_k=G_kA_k.
 $$
 
-按 $I_k$ 降序排列，完全同分时按张量名称排序以保持确定性，保存全部 17 个候选的排名。
+按 $I_k$ 降序排列，完全同分时按张量名称排序以保持确定性。完整表包含 41 项；按同一候选规则拆分为 17 项候选表和 24 项排除表，保留分数与相对顺序，各表的 `rank` 从 1 连续编号。
+
+完整表用 `eligible` 标明是否属于候选。排除原因写入 `exclusion_reason`：BN、Downsample、Stem；Downsample 中的 BN 同时记为 `BN;Downsample`，每个张量只占一行。三张表均记录参数数量 `parameters`。
 
 作者候选 Rank 取自 TSDP 保存的作者确认结果，已将 17 项名称固化在 `rank.py`，运行时不依赖外部项目。`author_rank` 记录每个候选在作者排序中的位置。
 
@@ -109,6 +113,18 @@ $$
 
 两项评分前后检查 $M_0$、$M_A$ 的所有参数和缓冲区完全不变。只读取原始数据、已有排列和已完成的 `01_train_base` 产物。
 
-`results/02_rank/resnet18/c100/seed_42/` 仅保存 `intrinsic.tsv`、`attention.tsv` 和 `rank.tsv`，均记录全部 17 个候选。保护集合与向 B 提供哪些参数由后续实验决定。
+`results/02_rank/resnet18/c100/seed_42/` 保存以下五份结果：
+
+| 文件 | 内容与用途 |
+|---|---|
+| `intrinsic.tsv` | 全部 41 项的参数数量和 $G_k$ |
+| `attention.tsv` | 全部 41 项的 $A_k$、响应类型及零向量统计 |
+| `rank_all.tsv` | 全部 41 项的 $G_k$、$A_k$、$I_k$、参数数量、排名与候选状态 |
+| `rank.tsv` | 17 项候选的评分与参数数量，原有字段含义保持不变，供 `03_topk` 使用 |
+| `rank_excluded.tsv` | 24 项排除张量的评分、参数数量、排名及排除原因 |
+
+三张 Rank 表按张量名称对应，同一张量的评分和参数量一致，候选与排除项互斥且并集为全部 41 项，无重复或遗漏。扩展后原有 17 项的 $G_k$、$A_k$、$I_k$、候选内排名及作者排名须与扩展前一致；若有差异，先定位原因。
+
+本次只扩展评分范围和输出，不改变评分公式、优化器、数据划分、变换、随机设置和输入权重。使用本实验的正式算法重新计算；保护集合与向 B 提供哪些参数由后续实验决定。
 
 内部重要性设置参考 [TensorShield 公开实现](https://github.com/suntong30/TensorShield/blob/main/model-stealing/knockoff/adversary/get_importance.py)。实际更新量、统一归一化、注意力数据划分、1×1 通道向量、分类头贡献向量、类别等权与零响应处理按本协议执行。

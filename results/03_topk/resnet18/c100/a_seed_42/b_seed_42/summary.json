@@ -1,0 +1,42 @@
+{
+  "victim_accuracy": 61.72,
+  "all_shield_accuracy": 16.89,
+  "epsilon_pp": 1.0,
+  "threshold_accuracy": 17.89,
+  "critical_k": {
+    "freeze": null,
+    "joint": null,
+    "both": null
+  },
+  "critical_protection": {
+    "freeze": null,
+    "joint": null,
+    "both": null
+  },
+  "inputs": {
+    "rank": {
+      "path": "results/02_rank/resnet18/c100/seed_42/rank.tsv",
+      "sha256": "b2a902cc6d13c4c15e87f72c9a9651c12bb8990066b7bb21247737a718ecf1a3"
+    },
+    "victim": {
+      "path": "weights/01_train_base/resnet18/c100/seed_42/best.pth",
+      "sha256": "99f9d28e38d5769c016bdea5a1776b21e3d038fb270db41686712593c7388d14"
+    },
+    "public_init": {
+      "path": "weights/public_init/resnet18/c100/seed_42/init.pth",
+      "sha256": "7bd470f587584b0d623ee1eedb27444b0b4fc48651c19c10ec6c075a25802108"
+    },
+    "query_indices": {
+      "path": "dataset/splits/c100/seed_42/ratio_0.01/b_indices.txt",
+      "sha256": "9af7bebda1f827d4844c29ead5a0e2b581c5108bc359d9c53dacb4893cbc7f49"
+    },
+    "query_cache": {
+      "path": "dataset/queries/resnet18/c100/a_seed_42/query_seed_42/ratio_0.01/probabilities.pth",
+      "sha256": "eb74cf650e101ccb69b67a5633971222372a26d2368eeaabbf9820e15c5d0f59"
+    }
+  },
+  "evaluation": "official_test_used_for_topk_selection",
+  "checkpoints": [
+    "weights/03_topk/resnet18/c100/a_seed_42/b_seed_42/all_shield.pth"
+  ]
+}

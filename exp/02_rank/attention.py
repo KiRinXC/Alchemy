@@ -1,4 +1,4 @@
-"""比较卷积 Grad-CAM 与分类头通道贡献，按类别等权统计注意力迁移。"""
+"""比较卷积、BN 的 Grad-CAM 与分类头通道贡献，按类别等权统计注意力迁移。"""
 
 from __future__ import annotations
 
@@ -12,21 +12,54 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 
+class LayerCapture:
+    """按模块保存原始输出和梯度，避免残差分支的回调顺序混淆。"""
+
+    def __init__(self, model, layers):
+        self.model = model
+        self.activations = {}
+        self.gradients = {}
+        self.handles = [layer.register_forward_hook(self.capture) for layer in layers]
+
+    def capture(self, module, inputs, output):
+        # BN 输出随后可能被原地 ReLU 或残差加法修改，立即保留原始值。
+        self.activations[module] = output.detach().cpu().clone()
+        if output.requires_grad:
+            def save_gradient(gradient):
+                self.gradients[module] = gradient.detach().cpu().clone()
+            output.register_hook(save_gradient)
+
+    def __call__(self, images):
+        self.activations.clear()
+        self.gradients.clear()
+        return self.model(images)
+
+    def release(self):
+        for handle in self.handles:
+            handle.remove()
+
+
 class RawGradCAM(GradCAM):
     """复用库的前向、梯度和通道权重计算，返回 ReLU 后未归一化的响应。"""
+
+    def __init__(self, model, target_layers):
+        super().__init__(model, target_layers)
+        self.activations_and_grads.release()
+        self.activations_and_grads = LayerCapture(model, target_layers)
 
     def compute_cam_per_layer(self, input_tensor, targets, eigen_smooth=False):
         if eigen_smooth:
             raise ValueError("本协议不使用特征平滑。")
-        activations = [value.cpu().numpy() for value in self.activations_and_grads.activations]
-        gradients = [value.cpu().numpy() for value in self.activations_and_grads.gradients]
+        activations = self.activations_and_grads.activations
+        gradients = self.activations_and_grads.gradients
         if len(activations) != len(self.target_layers) or len(gradients) != len(self.target_layers):
             raise RuntimeError("候选模块的特征与梯度数量不一致。")
         responses = []
         self.response_kinds = []
-        for layer, feature, gradient in zip(self.target_layers, activations, gradients):
+        for layer in self.target_layers:
+            feature, gradient = activations[layer].numpy(), gradients[layer].numpy()
             if feature.ndim != 4 or feature.shape != gradient.shape:
-                raise ValueError("Grad-CAM 候选必须产生四维卷积特征及对应梯度。")
+                raise ValueError("卷积和 BN 模块必须产生四维特征及对应梯度。")
             if feature.shape[-2:] == (1, 1):
                 # 保留每个通道的 alpha_c * feature_c，再逐通道 ReLU，避免压成单个标量。
                 weights = self.get_cam_weights(input_tensor, layer, targets, feature, gradient)
@@ -94,10 +127,10 @@ def compute_attention(
     public.eval()
     victim.eval()
     device = next(victim.parameters()).device
-    conv_names = [name for name in candidates if name != "last_linear.weight"]
-    names = [*conv_names, "last_linear.weight"]
-    public_layers = [public.get_submodule(name.removesuffix(".weight")) for name in conv_names]
-    victim_layers = [victim.get_submodule(name.removesuffix(".weight")) for name in conv_names]
+    feature_names = [name for name in candidates if name != "last_linear.weight"]
+    names = [*feature_names, "last_linear.weight"]
+    public_layers = [public.get_submodule(name.removesuffix(".weight")) for name in feature_names]
+    victim_layers = [victim.get_submodule(name.removesuffix(".weight")) for name in feature_names]
     if not isinstance(public.last_linear, nn.Linear) or not isinstance(victim.last_linear, nn.Linear):
         raise ValueError("本协议的分类头必须是线性层。")
 
