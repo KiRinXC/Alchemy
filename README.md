@@ -19,11 +19,11 @@ Alchemy 研究在公共预训练模型和部分已知权重可用时，如何恢
 | [weights/pre_train/](weights/pre_train/) | 公共 ImageNet 预训练权重 |
 | [weights/public_init/](weights/public_init/) | A 的公共初始化 |
 | [weights/exp/](weights/exp/) | 按实验编号保存的正式权重 |
-| [weights/lab/](weights/lab/) | 预留的探索实验权重目录 |
+| [weights/lab/](weights/lab/) | 按探索实验保存的训练权重与组级进度 |
 | [exp/](exp/) | 正式实验代码、配置和协议 |
-| [lab/](lab/) | 预留的探索与超参数验证目录 |
+| [lab/](lab/) | 探索实验的代码、配置和协议 |
 | [results/exp/](results/exp/) | 当前正式实验的指标、历史和曲线 |
-| [results/lab/](results/lab/) | 预留的探索实验结果目录 |
+| [results/lab/](results/lab/) | 探索实验的指标、逐轮记录和结果分析 |
 | [tests/](tests/README.md) | 验证结束后清空的临时工作区 |
 | [tmp/01_rawrank/](tmp/01_rawrank/README.md) | 作者原始内部重要性算法的临时对照实验与结果 |
 | [tmp/03_topk_history/](tmp/03_topk_history/README.md) | 两套历史 Top-k 的代码、权重和结果 |
@@ -43,6 +43,7 @@ Alchemy 研究在公共预训练模型和部分已知权重可用时，如何恢
 | [exp/01_train_base/](exp/01_train_base/README.md) | 全部训练数据微调、官方测试集选模 |
 | [exp/02_rank/](exp/02_rank/README.md) | TensorShield 内部重要性、注意力迁移和完整排序 |
 | [exp/03_topk/](exp/03_topk/README.md) | Top-k 保护扫描、Freeze / Joint 训练及黑盒阈值对照 |
+| [lab/01_basecheck/](lab/01_basecheck/README.md) | 分类头、学习率与权重衰减的基线配置对照与[结果分析](results/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/README.md) |
 | [run/models/download.py](run/models/download.py) | 下载并校验 ImageNet 预训练权重 |
 | [models/build.py](models/build.py) | 构造模型、加载预训练主体、按全局种子初始化分类头 |
 | [models/weights.py](models/weights.py) | 预训练权重的固定版本、存放位置与完整性校验 |

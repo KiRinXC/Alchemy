@@ -1,0 +1,22 @@
+{
+  "scan_complete": true,
+  "tested_k": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "all_shield_best_accuracy": 15.02,
+  "all_shield_final_accuracy": 14.85,
+  "threshold_best_accuracy": 16.02,
+  "critical_k": null,
+  "critical_protection": null,
+  "checkpoints": [
+    "weights/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/B5/all_shield.best.pth",
+    "weights/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/B5/all_shield.last.pth"
+  ]
+}

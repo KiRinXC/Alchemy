@@ -1,0 +1,27 @@
+{
+  "scan_complete": true,
+  "tested_k": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "all_shield_best_accuracy": 14.88,
+  "all_shield_final_accuracy": 14.74,
+  "threshold_best_accuracy": 15.88,
+  "critical_k": 12,
+  "critical_protection": {
+    "protected_parameters": 2779236,
+    "protected_ratio": 0.24753139792508105
+  },
+  "checkpoints": [
+    "weights/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/B4/all_shield.best.pth",
+    "weights/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/B4/all_shield.last.pth",
+    "weights/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/B4/joint_top_12.best.pth",
+    "weights/lab/01_basecheck/resnet18/c100/a_seed_42/b_seed_42/B4/joint_top_12.last.pth"
+  ]
+}

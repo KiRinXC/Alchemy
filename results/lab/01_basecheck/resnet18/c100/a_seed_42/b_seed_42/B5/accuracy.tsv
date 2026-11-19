@@ -1,0 +1,10 @@
+variant	strategy	k	initial_accuracy	best_accuracy	best_epoch	final_accuracy	protected_parameters	protected_ratio	gap_to_all_shield	final_gap_to_all_shield	delta_gap	final_delta_gap	source
+B5	all_shield		1.13	15.02	61	14.85	11227812	1.0	0.0	0.0	0.0	0.0	lab/01_basecheck
+B5	joint	10	2.3	23.68	84	23.55	1009764	0.08993417417391741	8.66	8.7	4.59	4.55	lab/01_basecheck
+B5	joint	11	1.39	20.15	73	19.93	1599588	0.14246658209097196	5.13	5.08	3.17	3.02	lab/01_basecheck
+B5	joint	12	2.26	18.74	65	18.55	2779236	0.24753139792508105	3.72	3.7	2.63	2.57	lab/01_basecheck
+B5	joint	13	1.56	18.27	93	18.16	5138532	0.4576610295932992	3.25	3.31	2.26	2.31	lab/01_basecheck
+B5	joint	14	1.53	17.6	100	17.6	7497828	0.6677906612615174	2.58	2.75	1.28	1.53	lab/01_basecheck
+B5	joint	15	1.71	17.18	97	17.08	9857124	0.8779202929297355	2.16	2.23	1.0	1.06	lab/01_basecheck
+B5	joint	16	1.83	16.87	84	16.74	10446948	0.9304527008467901	1.85	1.89	0.82	0.84	lab/01_basecheck
+B5	joint	17	0.64	16.81	95	16.78	11036772	0.9829851087638446	1.79	1.93	0.91	0.96	lab/01_basecheck

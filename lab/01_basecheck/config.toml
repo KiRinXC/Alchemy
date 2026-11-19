@@ -1,0 +1,45 @@
+# 固定沿用 Exp03 的 Victim、查询缓存、数据变换和评测协议。
+model = "resnet18"
+dataset = "c100"
+a_seed = 42
+b_seed = 42
+query_seed = 42
+k = [10, 11, 12, 13, 14, 15, 16, 17]
+epsilon_pp = 1.0
+
+# B0 读取正式 Exp03 的原始结果，B1–B5 各训练 All-Shield 和八个 Joint 组。
+[variants.B0]
+name = "Baseline"
+head = "B"
+lr = 0.1
+weight_decay = 0.0005
+
+[variants.B1]
+name = "Head"
+head = "A"
+lr = 0.1
+weight_decay = 0.0005
+
+[variants.B2]
+name = "LR"
+head = "B"
+lr = 0.01
+weight_decay = 0.0005
+
+[variants.B3]
+name = "WD"
+head = "B"
+lr = 0.1
+weight_decay = 0.0
+
+[variants.B4]
+name = "LRWD"
+head = "B"
+lr = 0.01
+weight_decay = 0.0
+
+[variants.B5]
+name = "LRWDHead"
+head = "A"
+lr = 0.01
+weight_decay = 0.0
