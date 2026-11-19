@@ -1,0 +1,106 @@
+{
+  "victim_accuracy": 61.72,
+  "all_shield_accuracy": 17.71,
+  "all_shield_final_accuracy": 17.58,
+  "epsilon_pp": 1.0,
+  "threshold_accuracy": 18.71,
+  "critical_k": {
+    "freeze": 12,
+    "joint": 13,
+    "both": 13
+  },
+  "critical_protection": {
+    "freeze": {
+      "protected_parameters": 2779236,
+      "protected_ratio": 0.24753139792508105
+    },
+    "joint": {
+      "protected_parameters": 5138532,
+      "protected_ratio": 0.4576610295932992
+    },
+    "both": {
+      "protected_parameters": 5138532,
+      "protected_ratio": 0.4576610295932992
+    }
+  },
+  "scan_complete": true,
+  "candidate_count": 17,
+  "tested_k": {
+    "freeze": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "joint": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "observed_min_k": {
+    "freeze": 12,
+    "joint": 13,
+    "both": 13
+  },
+  "inputs": {
+    "rank": {
+      "path": "results/exp/02_rank/resnet18/c100/seed_42/rank.tsv",
+      "sha256": "b2a902cc6d13c4c15e87f72c9a9651c12bb8990066b7bb21247737a718ecf1a3"
+    },
+    "victim": {
+      "path": "weights/exp/01_train_base/resnet18/c100/seed_42/best.pth",
+      "sha256": "99f9d28e38d5769c016bdea5a1776b21e3d038fb270db41686712593c7388d14"
+    },
+    "query_indices": {
+      "path": "dataset/splits/c100/seed_42/ratio_0.01/b_indices.txt",
+      "sha256": "9af7bebda1f827d4844c29ead5a0e2b581c5108bc359d9c53dacb4893cbc7f49"
+    },
+    "query_cache": {
+      "path": "dataset/queries/resnet18/c100/a_seed_42/query_seed_42/ratio_0.01/probabilities.pth",
+      "sha256": "eb74cf650e101ccb69b67a5633971222372a26d2368eeaabbf9820e15c5d0f59"
+    },
+    "public_init": {
+      "path": "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/public_init.pth",
+      "sha256": "6c7bdb452ff062798d3568187f8fcfc3c347b50a1cb4c29f9dbaaa7ab544606c"
+    }
+  },
+  "evaluation": "official_test_used_for_best_epoch_and_topk_selection",
+  "checkpoints": [
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/all_shield.best.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/all_shield.last.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/freeze_top_12.best.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/freeze_top_12.last.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/freeze_top_13.best.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/freeze_top_13.last.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/joint_top_13.best.pth",
+    "weights/exp/03_topk/resnet18/c100/a_seed_42/b_seed_42/joint_top_13.last.pth"
+  ]
+}

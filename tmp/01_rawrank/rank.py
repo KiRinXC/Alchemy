@@ -128,7 +128,7 @@ def check_unchanged(model, before, name):
 def load_models(settings, config):
     """固定公共初始化并加载既有 Victim，所有新权重只写入本目录。"""
     relative = Path(settings["model"]) / settings["dataset"] / f"seed_{config.seed}"
-    victim_path = ROOT / "weights/01_train_base" / relative / "best.pth"
+    victim_path = ROOT / "weights/exp/01_train_base" / relative / "best.pth"
     checkpoint = torch.load(victim_path, map_location="cpu", weights_only=True)
     metadata = checkpoint.get("config", checkpoint.get("metadata", {}))
     for key, expected in (("model", settings["model"]), ("dataset", settings["dataset"]), ("seed", config.seed)):

@@ -19,12 +19,12 @@
 
 `--all-seeds` 运行全局配置中的全部种子；`--dry-run` 只核对输入。
 
-权重：`weights/01_train_base/<模型>/<数据集>/seed_<种子>/`。
+权重：`weights/exp/01_train_base/<模型>/<数据集>/seed_<种子>/`。
 
 - `best.pth`：测试准确率最高的模型，同分时保存较晚轮次。
 - `last.pth`：最近完整轮次的模型、优化器、调度器和随机状态。
 
-结果：`results/01_train_base/<模型>/<数据集>/seed_<种子>/`。
+结果：`results/exp/01_train_base/<模型>/<数据集>/seed_<种子>/`。
 
 - `summary.json`：最佳轮和最后一轮的训练/测试准确率与 loss，以及训练评估累计分钟数。
 - `history.csv`：每轮的学习率、训练/测试 loss、准确率和耗时（秒）。

@@ -11,7 +11,7 @@
 | 模型 | 定义 |
 |---|---|
 | $M_0$ | `build_model` 构造的 A 训练起点：固定 ImageNet 主体和 seed 42 初始化的 100 类分类头 |
-| $M_A$ | `weights/01_train_base/resnet18/c100/seed_42/best.pth`，epoch 69，测试选模准确率 61.72% |
+| $M_A$ | `weights/exp/01_train_base/resnet18/c100/seed_42/best.pth`，epoch 69，测试选模准确率 61.72% |
 | $M_G$ | $M_A$ 的临时副本，仅用于内部重要性计算 |
 
 直接读取 `dataset/splits/c100/seed_42/order.txt`，索引对应 CIFAR-100 官方训练文件顺序。
@@ -113,7 +113,7 @@ $$
 
 两项评分前后检查 $M_0$、$M_A$ 的所有参数和缓冲区完全不变。只读取原始数据、已有排列和已完成的 `01_train_base` 产物。
 
-`results/02_rank/resnet18/c100/seed_42/` 保存以下五份结果：
+`results/exp/02_rank/resnet18/c100/seed_42/` 保存以下五份结果：
 
 | 文件 | 内容与用途 |
 |---|---|

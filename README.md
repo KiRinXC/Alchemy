@@ -3,24 +3,30 @@
 Alchemy 研究在公共预训练模型和部分已知权重可用时，如何恢复目标模型的任务能力。
 玩家 A 使用 TensorShield，玩家 B 使用相同模型结构，通过查询 A 得到的完整软标签训练替代模型。
 
-当前已完成运行环境、四个原始数据集、数据划分、预训练模型准备，以及 ResNet18 + c100 的首轮玩家 A 微调、张量排序和 Top-k 保护扫描。后续实验采用 `exp/02_rank` 的 Rank。
+当前包含运行环境、四个原始数据集、数据划分、预训练模型准备，以及 ResNet18 + c100 的玩家 A 微调、张量排序和 Top-k 保护扫描。`03_topk` 读取 `02_rank` 中的作者排序，B 的优化器配置与 A 一致。
 
 ## 目录
 
 | 路径 | 内容 |
 |---|---|
 | [config.toml](config.toml) | 全局随机种子和 B 的数据比例 |
-| [configs/finetune.toml](configs/finetune.toml) | 共用的微调超参数 |
+| [configs/finetune.toml](configs/finetune.toml) | 玩家 A 的微调超参数 |
 | [run/](run/) | 实验流程与准备脚本，用于快速复现 |
 | [models/](models/README.md) | 共享的模型结构与加载代码 |
 | [dataset/raw/](dataset/raw/README.md) | c10、c100、s10、t200 的原始数据、构成和尺寸说明 |
 | [dataset/splits/](dataset/splits/README.md) | A/B 数据划分及样本索引 |
 | [dataset/queries/](dataset/queries/) | 查询 A 得到的概率数据 |
-| [weights/](weights/) | 公共预训练权重和实验权重 |
+| [weights/pre_train/](weights/pre_train/) | 公共 ImageNet 预训练权重 |
+| [weights/public_init/](weights/public_init/) | A 的公共初始化 |
+| [weights/exp/](weights/exp/) | 按实验编号保存的正式权重 |
+| [weights/lab/](weights/lab/) | 预留的探索实验权重目录 |
 | [exp/](exp/) | 正式实验代码、配置和协议 |
-| [results/](results/) | 实验指标摘要和逐轮训练数据 |
+| [lab/](lab/) | 预留的探索与超参数验证目录 |
+| [results/exp/](results/exp/) | 当前正式实验的指标、历史和曲线 |
+| [results/lab/](results/lab/) | 预留的探索实验结果目录 |
 | [tests/](tests/README.md) | 验证结束后清空的临时工作区 |
 | [tmp/01_rawrank/](tmp/01_rawrank/README.md) | 作者原始内部重要性算法的临时对照实验与结果 |
+| [tmp/03_topk_history/](tmp/03_topk_history/README.md) | 两套历史 Top-k 的代码、权重和结果 |
 | [docs/](docs/) | 论文和参考资料 |
 | [AGENTS.md](AGENTS.md) | 项目协作规则 |
 

@@ -17,7 +17,7 @@
 .venv/bin/python -B exp/02_rank/rank.py --seed 42
 ```
 
-结果位于 `results/02_rank/resnet18/c100/seed_42/`。
+结果位于 `results/exp/02_rank/resnet18/c100/seed_42/`。
 
 | 文件 | 内容 |
 |---|---|

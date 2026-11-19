@@ -39,7 +39,7 @@ def main() -> None:
     # 清理旧打包方式遗留的项目元数据和源码字节码。
     remove_directory(ROOT / "alchemy_research.egg-info")
     remove_directory(ROOT / "__pycache__")
-    for name in ("run", "models", "tests", "exp"):
+    for name in ("run", "models", "tests", "exp", "lab"):
         for path in (ROOT / name).rglob("__pycache__"):
             remove_directory(path)
     print("Kept .venv, .tools, raw data/archives, model caches and experiment outputs.")

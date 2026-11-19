@@ -85,10 +85,10 @@ VGG 在所有数据集上均使用训练变换进行测试选模，包括随机�
 
 | 目录 | 文件 | 内容 |
 |---|---|---|
-| `weights/01_train_base/` | `best.pth` | 最佳模型、选模指标与实际运行配置 |
-| `weights/01_train_base/` | `last.pth` | 最近完整轮次的模型、优化器、调度器、随机状态及实际运行配置 |
-| `results/01_train_base/` | `summary.json` | 最佳轮和最后一轮的训练/测试准确率与 loss、累计耗时（分钟） |
-| `results/01_train_base/` | `history.csv` | 每轮的学习率、训练/测试准确率与 loss、耗时（秒） |
+| `weights/exp/01_train_base/` | `best.pth` | 最佳模型、选模指标与实际运行配置 |
+| `weights/exp/01_train_base/` | `last.pth` | 最近完整轮次的模型、优化器、调度器、随机状态及实际运行配置 |
+| `results/exp/01_train_base/` | `summary.json` | 最佳轮和最后一轮的训练/测试准确率与 loss、累计耗时（分钟） |
+| `results/exp/01_train_base/` | `history.csv` | 每轮的学习率、训练/测试准确率与 loss、耗时（秒） |
 
 准确率以百分数记录，loss 按样本数求平均，累计耗时由逐轮秒数相加得到。恢复训练时核对实际配置，并恢复 Python、NumPy、Torch、CUDA 和两个 DataLoader 的随机状态。
 

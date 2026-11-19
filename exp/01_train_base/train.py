@@ -343,7 +343,7 @@ def main() -> None:
     test_loader = make_loader(test_data, training["batch_size"], False, args.num_workers, config, device)
     model = build_model(args.model, args.dataset, config).to(device)
     relative = Path(EXPERIMENT) / args.model / args.dataset / f"seed_{config.seed}"
-    weights_dir, results_dir = ROOT / "weights" / relative, ROOT / "results" / relative
+    weights_dir, results_dir = ROOT / "weights/exp" / relative, ROOT / "results/exp" / relative
     run_config = build_run_config(args, settings, config, training, len(train_data), len(test_data))
     print(f"{args.model}/{args.dataset}/seed_{config.seed}：训练 {len(train_data)} 张，测试选模 {len(test_data)} 张。", flush=True)
     if args.dry_run:

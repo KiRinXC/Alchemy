@@ -15,7 +15,7 @@
 | 模型 | 定义 |
 |---|---|
 | $M_0$ | ImageNet 预训练 ResNet18 主体和 seed 42 初始化的 100 类分类头 |
-| $M_A$ | `weights/01_train_base/resnet18/c100/seed_42/best.pth`，epoch 69，测试选模准确率 61.72% |
+| $M_A$ | `weights/exp/01_train_base/resnet18/c100/seed_42/best.pth`，epoch 69，测试选模准确率 61.72% |
 | $M_G$ | $M_A$ 的临时副本，仅用于内部重要性计算 |
 
 公共初始化优先读取项目已有的 `weights/public_init/resnet18/c100/seed_42/init.pth`。该文件不存在时，使用 `models/build.py` 构建，并固定在本实验自己的 `weights/public_init/resnet18/c100/seed_42/init.pth`。加载时核对其与同种子构建结果一致。

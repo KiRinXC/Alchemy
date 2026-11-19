@@ -67,7 +67,7 @@ def read_settings(path: Path) -> dict:
 
 def load_models(settings: dict, config: Config) -> tuple[nn.Module, nn.Module]:
     """按 A 的同一训练起点构造 M_0，再将已训练权重加载到独立的 M_A。"""
-    checkpoint_path = ROOT / "weights/01_train_base" / settings["model"] / settings["dataset"] / f"seed_{config.seed}/best.pth"
+    checkpoint_path = ROOT / "weights/exp/01_train_base" / settings["model"] / settings["dataset"] / f"seed_{config.seed}/best.pth"
     checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
     metadata = checkpoint.get("config", checkpoint.get("metadata", {}))
     for key, expected in (("model", settings["model"]), ("dataset", settings["dataset"]), ("seed", config.seed)):
@@ -224,7 +224,7 @@ def main() -> None:
     torch.set_num_threads(settings["cpu_threads"])
     if settings["device"].startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("没有可用 CUDA 设备。")
-    output = ROOT / "results/02_rank" / settings["model"] / settings["dataset"] / f"seed_{config.seed}"
+    output = ROOT / "results/exp/02_rank" / settings["model"] / settings["dataset"] / f"seed_{config.seed}"
     if not args.dry_run and not args.overwrite and any((output / name).exists() for name in OUTPUTS):
         raise FileExistsError("评分结果已存在；需要重新计算时显式使用 --overwrite。")
     intrinsic_loader, attention_loader = load_data(settings, config)
